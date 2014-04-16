@@ -326,7 +326,7 @@ function Process-Groups
     else
     {
         #Group Does not Exist, return such info
-        $GroupMembers += "No Such Group"
+        $GroupMembers += "Cannot Connect or No Such Group"
     }
 
     return $GroupMembers
