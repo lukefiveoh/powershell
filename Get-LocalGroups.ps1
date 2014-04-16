@@ -294,6 +294,7 @@ function global:Get-LocalGroups
     End
     {
         Write-Verbose "Our script has completed...exiting"
+        Write-Verbose "We have gathered info for:" $GroupMembers.Count 
     }
 }
 
@@ -325,7 +326,7 @@ function Process-Groups
     else
     {
         #Group Does not Exist, return such info
-        $GroupMembers[0] = "No Such Group"
+        $GroupMembers += "No Such Group"
     }
 
     return $GroupMembers
