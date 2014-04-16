@@ -186,7 +186,7 @@ function global:Get-LocalGroups
     {
         Write-Verbose "Beginning Processing..."
 
-        if ($type -eq "server")
+        if (($type -eq "server") -and ($MaxResultSize -is [int]))
         {
             $AllTheComputers = Get-ADComputer -ResultSetSize $MaxResultSize -Filter {OperatingSystem -Like "*server*"}
             for ($i=0; $i -lt $AllTheComputers.Count; $i++)
@@ -194,7 +194,15 @@ function global:Get-LocalGroups
                 $ComputersToProcess += [String]$AllTheComputers[$i].Name
             }
         }
-        elseif ($type -eq "workstation")
+        elseif (($type -eq "server") -and ($maxresultsize -eq "*"))
+        {
+            $AllTheComputers = Get-ADComputer -Filter {OperatingSystem -Like "*server*"}
+            for ($i=0; $i -lt $AllTheComputers.Count; $i++)
+            {
+                $ComputersToProcess += [String]$AllTheComputers[$i].Name
+            }
+        }
+        elseif (($type -eq "workstation") -and ($MaxResultSize -is [int]))
         {
             $AllTheComputers = Get-ADComputer -ResultSetSize $MaxResultSize -Filter {OperatingSystem -NotLike "*server*"}
             for ($i=0; $i -lt $AllTheComputers.Count; $i++)
@@ -202,13 +210,33 @@ function global:Get-LocalGroups
                 $ComputersToProcess += [String]$AllTheComputers[$i].Name
             }
         }
-        elseif ($type -eq "custom")
+        elseif (($type -eq "workstation") -and ($MaxResultSize -eq "*"))
+        {
+            $AllTheComputers = Get-ADComputer -Filter {OperatingSystem -NotLike "*server*"}
+            for ($i=0; $i -lt $AllTheComputers.Count; $i++)
+            {
+                $ComputersToProcess += [String]$AllTheComputers[$i].Name
+            }
+        }
+        elseif (($type -eq "custom")-and ($MaxResultSize -is [int]))
         {
             $AllTheComputers = Get-ADComputer -ResultSetSize $MaxResultSize -Filter $Filter
             for ($i=0; $i -lt $AllTheComputers.Count; $i++)
             {
                 $ComputersToProcess += [String]$AllTheComputers[$i].Name
             }
+        }
+        elseif (($type -eq "custom")-and ($MaxResultSize -eq "*"))
+        {
+            $AllTheComputers = Get-ADComputer -Filter $Filter
+            for ($i=0; $i -lt $AllTheComputers.Count; $i++)
+            {
+                $ComputersToProcess += [String]$AllTheComputers[$i].Name
+            }
+        }
+        else
+        {
+            break
         }
 
         Write-verbose "Initialization complete - Ready to start gathering group information"
